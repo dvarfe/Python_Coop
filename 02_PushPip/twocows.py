@@ -69,6 +69,11 @@ parser.add_argument(
          "If not given, stdin is used instead."
 )
 
+parser.add_argument(
+    "message_2", default="I can't read input from stdin", nargs='?',
+    help="Second message to include in the speech bubble. "
+)
+
 def get_preset(args):
     return (
             args.y or args.w or args.t or args.s
@@ -97,7 +102,7 @@ def run(func):
     else:
         cow = args.f or "default"
 
-    print(func(
+    first_cow = func(
         message=args.message_1,
         cow=cow,
         preset=get_preset(args),
@@ -106,7 +111,26 @@ def run(func):
         width=args.width,
         wrap_text=args.n,
         cowfile=get_cowfile(args.f),
-    ))
+    )
+    first_cow = first_cow.split('\n')
+    second_cow = func(
+        message=args.message_2,
+        cow=cow,
+        preset=get_preset(args),
+        eyes=args.eyes,
+        tongue=args.tongue,
+        width=args.width,
+        wrap_text=args.n,
+        cowfile=get_cowfile(args.f),
+    )
+    second_cow = second_cow.split('\n')
 
+    first_cow_w = max([len(i) for i in first_cow])
+    first_cow_h = len(first_cow) 
+
+    cows_united = [(' ' * (first_cow_w - len(i[0]))).join(map(str, i)) for i in zip(first_cow, second_cow)]
+    cows_united = '\n'.join(cows_united)
+
+    print(cows_united)
 
 run(cowsay)
