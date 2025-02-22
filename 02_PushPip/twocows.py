@@ -49,7 +49,11 @@ parser.add_argument(
 )
 parser.add_argument(
     "-n", action="store_false",
-    help="If given, text in the speech bubble will not be wrapped"
+    help="If given, text in the speech bubble of first cow will not be wrapped"
+)
+parser.add_argument(
+    "-N", action="store_false",
+    help="If given, text in the speech bubble of second cow will not be wrapped"
 )
 parser.add_argument(
     "-T", type=str, dest="tongue",
@@ -163,7 +167,7 @@ def run(func):
         eyes=args.eyes_2,
         tongue=args.tongue,
         width=args.width,
-        wrap_text=args.n,
+        wrap_text=args.N,
         cowfile=get_cowfile(args.f),
     )
 
