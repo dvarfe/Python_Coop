@@ -19,10 +19,20 @@ parser.add_argument(
 )
 parser.add_argument(
     "-f", type=str, metavar="cowfile",
-    help="Either the name of a cow specified in the COWPATH, "
+    help="Specifies appearance of the first cow "
+        "Either the name of a cow specified in the COWPATH, "
          "or a path to a cowfile (if provided as a path, the path must "
          "contain at least one path separator)",
 )
+
+parser.add_argument(
+    "-F", type=str, metavar="cowfile",
+    help="Specifies appearance of the second cow "
+        "Either the name of a cow specified in the COWPATH, "
+         "or a path to a cowfile (if provided as a path, the path must "
+         "contain at least one path separator)",
+)
+
 parser.add_argument(
     "-l", action="store_true",
     help="Lists all cows in the cow path and exits"
@@ -70,7 +80,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "message_2", default="I can't read input from stdin", nargs='?',
+    "message_2", default="Mooo?", nargs='?',
     help="Second message to include in the speech bubble. "
 )
 
@@ -87,6 +97,24 @@ def get_cowfile(cow):
     else:
         return None
 
+def unite_cows_aligned(first_cow_in, second_cow_in):
+    
+    first_cow = first_cow_in.split('\n')
+    second_cow = second_cow_in.split('\n')
+
+    first_cow_w = max([len(i) for i in first_cow])
+    first_cow_h = len(first_cow)
+    second_cow_h = len(second_cow) 
+
+
+    first_cow = ['' for i in range(max(first_cow_h, second_cow_h) - first_cow_h) ] + first_cow
+    second_cow = ['' for i in range(max(first_cow_h, second_cow_h) - second_cow_h) ] + second_cow
+
+    cows_united = [(' ' * (first_cow_w - len(i[0]))).join(map(str, i)) for i in zip(first_cow, second_cow)]
+    cows_united = '\n'.join(cows_united)
+
+    return cows_united
+
 def run(func):
     args = parser.parse_args()
 
@@ -97,14 +125,19 @@ def run(func):
     if args.message_1 is None:
         args.message_1 = sys.stdin.read()
 
+    if args.message_2 is None:
+        args.message_2 = "I can't read from stdin"
+
     if args.random:
-        cow = args.f or random.choice(list_cows())
+        cow_1 = args.f or random.choice(list_cows())
+        cow_2 = args.F or random.choice(list_cows())
     else:
-        cow = args.f or "default"
+        cow_1 = args.f or "default"
+        cow_2 = args.F or "default"
 
     first_cow = func(
         message=args.message_1,
-        cow=cow,
+        cow=cow_1,
         preset=get_preset(args),
         eyes=args.eyes,
         tongue=args.tongue,
@@ -112,10 +145,10 @@ def run(func):
         wrap_text=args.n,
         cowfile=get_cowfile(args.f),
     )
-    first_cow = first_cow.split('\n')
+
     second_cow = func(
         message=args.message_2,
-        cow=cow,
+        cow=cow_2,
         preset=get_preset(args),
         eyes=args.eyes,
         tongue=args.tongue,
@@ -123,14 +156,7 @@ def run(func):
         wrap_text=args.n,
         cowfile=get_cowfile(args.f),
     )
-    second_cow = second_cow.split('\n')
 
-    first_cow_w = max([len(i) for i in first_cow])
-    first_cow_h = len(first_cow) 
-
-    cows_united = [(' ' * (first_cow_w - len(i[0]))).join(map(str, i)) for i in zip(first_cow, second_cow)]
-    cows_united = '\n'.join(cows_united)
-
-    print(cows_united)
+    print(unite_cows_aligned(first_cow, second_cow))
 
 run(cowsay)
