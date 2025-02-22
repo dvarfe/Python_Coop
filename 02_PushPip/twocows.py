@@ -30,7 +30,7 @@ parser.add_argument(
 parser.add_argument(
     "-f", type=str, metavar="cowfile",
     help="Specifies appearance of the first cow "
-        "Either the name of a cow specified in the COWPATH, "
+    "Either the name of a cow specified in the COWPATH, "
          "or a path to a cowfile (if provided as a path, the path must "
          "contain at least one path separator)",
 )
@@ -38,7 +38,7 @@ parser.add_argument(
 parser.add_argument(
     "-F", type=str, metavar="cowfile",
     help="Specifies appearance of the second cow "
-        "Either the name of a cow specified in the COWPATH, "
+    "Either the name of a cow specified in the COWPATH, "
          "or a path to a cowfile (if provided as a path, the path must "
          "contain at least one path separator)",
 )
@@ -98,11 +98,13 @@ parser.add_argument(
     help="Second message to include in the speech bubble. "
 )
 
+
 def get_preset(args):
     return (
-            args.y or args.w or args.t or args.s
-            or args.p or args.g or args.d or args.b
+        args.y or args.w or args.t or args.s
+        or args.p or args.g or args.d or args.b
     )
+
 
 def get_cowfile(cow):
     if cow is not None and len(cow.split(os.sep)) > 1:
@@ -111,23 +113,27 @@ def get_cowfile(cow):
     else:
         return None
 
+
 def unite_cows_aligned(first_cow_in, second_cow_in):
-    
+
     first_cow = first_cow_in.split('\n')
     second_cow = second_cow_in.split('\n')
 
     first_cow_w = max([len(i) for i in first_cow])
     first_cow_h = len(first_cow)
-    second_cow_h = len(second_cow) 
+    second_cow_h = len(second_cow)
 
+    first_cow = ['' for i in range(
+        max(first_cow_h, second_cow_h) - first_cow_h)] + first_cow
+    second_cow = ['' for i in range(
+        max(first_cow_h, second_cow_h) - second_cow_h)] + second_cow
 
-    first_cow = ['' for i in range(max(first_cow_h, second_cow_h) - first_cow_h) ] + first_cow
-    second_cow = ['' for i in range(max(first_cow_h, second_cow_h) - second_cow_h) ] + second_cow
-
-    cows_united = [(' ' * (first_cow_w - len(i[0]))).join(map(str, i)) for i in zip(first_cow, second_cow)]
+    cows_united = [(' ' * (first_cow_w - len(i[0]))).join(map(str, i))
+                   for i in zip(first_cow, second_cow)]
     cows_united = '\n'.join(cows_united)
 
     return cows_united
+
 
 def run(func):
     args = parser.parse_args()
@@ -172,5 +178,6 @@ def run(func):
     )
 
     print(unite_cows_aligned(first_cow, second_cow))
+
 
 run(cowsay)
