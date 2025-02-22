@@ -12,11 +12,21 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "-e",
     type=str,
-    help="An eye string. This is ignored if a preset mode is given",
-    dest="eyes",
+    help="An eye string for first cow. This is ignored if a preset mode is given",
+    dest="eyes_1",
     default=Option.eyes,
-    metavar="eye_string",
+    metavar="eye_1_string",
 )
+
+parser.add_argument(
+    "-E",
+    type=str,
+    help="An eye string for second cow. This is ignored if a preset mode is given",
+    dest="eyes_2",
+    default=Option.eyes,
+    metavar="eye_2_string",
+)
+
 parser.add_argument(
     "-f", type=str, metavar="cowfile",
     help="Specifies appearance of the first cow "
@@ -139,7 +149,7 @@ def run(func):
         message=args.message_1,
         cow=cow_1,
         preset=get_preset(args),
-        eyes=args.eyes,
+        eyes=args.eyes_1,
         tongue=args.tongue,
         width=args.width,
         wrap_text=args.n,
@@ -150,7 +160,7 @@ def run(func):
         message=args.message_2,
         cow=cow_2,
         preset=get_preset(args),
-        eyes=args.eyes,
+        eyes=args.eyes_2,
         tongue=args.tongue,
         width=args.width,
         wrap_text=args.n,
