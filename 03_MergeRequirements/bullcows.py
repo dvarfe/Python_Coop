@@ -1,5 +1,6 @@
-from typing import Tuple
+from typing import Tuple, List
 from collections import Counter
+from random import choice
 
 
 def bullcows(guess: str, ground_truth: str) -> Tuple[int, int]:
@@ -18,3 +19,14 @@ def bullcows(guess: str, ground_truth: str) -> Tuple[int, int]:
     cows -= bulls
 
     return bulls, cows
+
+
+def ask(prompt: str, valid: List[str] = None) -> str:
+
+    print(prompt)
+    guess = input()
+    if (valid is not None) and (guess != valid):
+        print(prompt)
+        guess = input()
+
+    return guess
