@@ -3,7 +3,7 @@ from collections import Counter
 import sys
 import os
 from random import choice
-from urllib.request import urlopenn
+from urllib.request import urlopen
 
 
 def bullcows(guess: str, ground_truth: str) -> Tuple[int, int]:
