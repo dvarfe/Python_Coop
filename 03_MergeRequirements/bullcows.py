@@ -35,3 +35,15 @@ def ask(prompt: str, valid: List[str] = None) -> str:
 
 def inform(format_string: str, bulls: int, cows: int) -> None:
     print(format_string.format(bulls, cows))
+
+
+def gameplay(ask: callable, inform: callable, words: List[str]) -> int:
+    gt_word = choice(words)
+    attempts = 0
+    bulls, cows = -1, 0
+    while bulls != len(gt_word):
+        attempts += 1
+        guess = ask('Введите слово: ', words)
+        bulls, cows = bullcows(guess, gt_word)
+        inform("Быки: {}, Коровы: {}", bulls, cows)
+    print(attempts)
