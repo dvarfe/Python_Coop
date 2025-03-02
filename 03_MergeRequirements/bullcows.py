@@ -30,3 +30,10 @@ def ask(prompt: str, valid: List[str] = None) -> str:
         guess = input()
 
     return guess
+
+
+def inform(format_string: str, bulls: int, cows: int) -> None:
+    print(format_string, bulls, cows)
+
+
+def game
