@@ -60,8 +60,7 @@ if __name__ == '__main__':
             words = f.readlines()
         words = [word.strip() for word in words]
     else:
-        data = urlopen(
-            'https://raw.githubusercontent.com/Harrix/Russian-Nouns/main/dist/russian_nouns.txt')
+        data = urlopen(words_path)
         encoding = data.headers.get_param('charset')
         if encoding is not None:
             words = data.read().decode(encoding).split()
