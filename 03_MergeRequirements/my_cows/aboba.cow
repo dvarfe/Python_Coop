@@ -1,0 +1,10 @@
+##
+## My Cow
+##
+$the_cow = <<EOC;
+  $thoughts
+   $thoughts
+      |\__/,|   (`\
+    _.|o o  |_   ) )
+  -(((---(((--------
+EOC
