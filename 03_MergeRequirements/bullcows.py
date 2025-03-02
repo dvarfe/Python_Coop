@@ -1,11 +1,13 @@
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 from collections import Counter
 import sys
 import os
 from random import choice
 from urllib.request import urlopen
 
-from cowsay import cowsay
+from cowsay import cowsay, get_random_cow, get_cow
+
+COWFILE = 'aboba.cow'
 
 
 def bullcows(guess: str, ground_truth: str) -> Tuple[int, int]:
@@ -26,22 +28,21 @@ def bullcows(guess: str, ground_truth: str) -> Tuple[int, int]:
     return bulls, cows
 
 
-def make_cow(message):
-    '''
-    Creates random cow from presets
-    '''
-    preset_str = 'bdgpstwy'
-    preset = choice(preset_str)
-    return cowsay(message=message, preset=preset)
+def make_cow(message: str, cow_path: Optional[None] = None):
+    if cow_path is not None:
+        cowfile = get_cow(get_random_cow(cow_path), cow_path=cow_path)
+    else:
+        cowfile = get_cow(get_random_cow())
+    return cowsay(message=message, cowfile=cowfile)
 
 
 def ask(prompt: str, valid: List[str] = None) -> str:
 
-    print(make_cow(message=prompt))
+    print(make_cow(message=prompt, cow_path='./my_cows'))
     guess = input()
     if (valid is not None):
         while (not (guess in valid)):
-            print(make_cow(prompt))
+            print(make_cow(message=prompt, cow_path='./my_cows'))
             guess = input()
 
     return guess
