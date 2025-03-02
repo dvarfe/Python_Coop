@@ -26,7 +26,7 @@ def ask(prompt: str, valid: List[str] = None) -> str:
     print(prompt)
     guess = input()
     if (valid is not None):
-        while (guess != valid):
+        while (not (guess in valid)):
             print(prompt)
             guess = input()
 
@@ -35,18 +35,3 @@ def ask(prompt: str, valid: List[str] = None) -> str:
 
 def inform(format_string: str, bulls: int, cows: int) -> None:
     print(format_string.format(bulls, cows))
-
-
-def gameplay(ask: callable, inform: callable, words: List[str]) -> int:
-    gt_word = choice(words)
-    attempts = 0
-    bulls, cows = -1, 0
-    while bulls != 5:
-        attempts += 1
-        guess = ask('Введите слово: ')
-        bulls, cows = bullcows(guess, gt_word)
-        inform("Быки: {}, Коровы: {}", bulls, cows)
-    print(attempts)
-
-
-gameplay(ask, inform, words := ['ропот'])
