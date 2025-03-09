@@ -1,7 +1,7 @@
-from cowsay import list_cows, make_bubble, THOUGHT_OPTIONS, Bubble
 import os
 import shlex
 import cmd
+from cowsay import list_cows, make_bubble, THOUGHT_OPTIONS, Bubble, Option, Option, cowsay
 
 
 class twocows(cmd.Cmd):
@@ -54,6 +54,67 @@ class twocows(cmd.Cmd):
                                      'true' or wrap_str == '1')
 
             print(make_bubble(text, brackets, width, wrap_text))
+
+    def __parse_cowsay(self, cow_args):
+
+        cow_text = cow_args[0]
+
+        if len(cow_args) > 1:
+            cow_name = cow_args[1]
+
+        eyes_template, tongue_template = 'eyes=', 'tongue='
+        cow_eyes = Option.eyes
+        cow_tongue = Option.tongue
+
+        for word in cow_args[2::]:
+            if word.startswith(eyes_template):
+                cow_eyes = word[len(eyes_template)::]
+            elif word.startswith(tongue_template):
+                cow_tongue = word[len(tongue_template)::]
+
+        return cowsay(message=cow_text, cow=cow_name,
+                      eyes=cow_eyes, tongue=cow_tongue)
+
+    def __unite_cows_aligned(self, first_cow_in, second_cow_in):
+
+        first_cow = first_cow_in.split('\n')
+        second_cow = second_cow_in.split('\n')
+
+        first_cow_w = max([len(i) for i in first_cow])
+        first_cow_h = len(first_cow)
+        second_cow_h = len(second_cow)
+
+        first_cow = ['' for i in range(
+            max(first_cow_h, second_cow_h) - first_cow_h)] + first_cow
+        second_cow = ['' for i in range(
+            max(first_cow_h, second_cow_h) - second_cow_h)] + second_cow
+
+        cows_united = [(' ' * (first_cow_w - len(i[0]))).join(map(str, i))
+                       for i in zip(first_cow, second_cow)]
+        cows_united = '\n'.join(cows_united)
+
+        return cows_united
+
+    def do_cowsay(self, args):
+        '''
+        Similar to the cowsay command. 
+        cowsay msg [cow_name [parameter=value …]] reply answer [cow_name [[parameter=value …]]
+
+        cow_name - valid .cow file name
+        parameter - 'eyes' or 'tongue'
+        '''
+        parsed_args = shlex.split(args)
+        if len(parsed_args) < 3:
+            print('Please enter full conversation')
+            return
+        if 'reply' not in parsed_args:
+            print('No reply!')
+            return
+        reply_begidx = parsed_args.index('reply')
+        cow_1 = self.__parse_cowsay(parsed_args[0:reply_begidx])
+        cow_2 = self.__parse_cowsay(parsed_args[reply_begidx + 1:])
+
+        print(self.__unite_cows_aligned(cow_1, cow_2))
 
 
 if __name__ == '__main__':
