@@ -121,7 +121,7 @@ class twocows(cmd.Cmd):
         print(self.__unite_cows_aligned(cow_1, cow_2))
 
     def complete_cowsay(self, text, line, begidx, endidx):
-        words = (line[:endidx] + ".").split()
+        words = (line + ".").split()
         cow_list = list_cows()
         text_begin = words[-1][:-1:]
         completion_dict = [c for c in cow_list if c.startswith(text_begin)]
@@ -132,8 +132,10 @@ class twocows(cmd.Cmd):
             if (len(words) == reply_idx + 3):
                 completion_dict = [
                     c for c in cow_list if c.startswith(text_begin)]
-        if (len(completion_dict) == 1) and completion_dict[0] == text_begin:
-            completion_dict = []
+        if (len(completion_dict) == 1):
+            if text != text_begin:
+                completion_idx = text_begin.rfind(text)
+                completion_dict = [completion_dict[0][completion_idx::]]
         return completion_dict
 
     def do_cowthink(self, args):
