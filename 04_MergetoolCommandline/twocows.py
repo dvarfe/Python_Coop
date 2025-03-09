@@ -1,7 +1,7 @@
 import os
 import shlex
 import cmd
-from cowsay import list_cows, make_bubble, THOUGHT_OPTIONS, Bubble, Option, Option, cowsay
+from cowsay import list_cows, make_bubble, THOUGHT_OPTIONS, Bubble, Option, Option, cowsay, cowthink
 
 
 class twocows(cmd.Cmd):
@@ -55,25 +55,29 @@ class twocows(cmd.Cmd):
 
             print(make_bubble(text, brackets, width, wrap_text))
 
-    def __parse_cowsay(self, cow_args):
+    def __parse_cowsay(self, cow_args, mode):
 
         cow_text = cow_args[0]
-
+        cow_name = 'default'
+        cow_eyes = Option.eyes
+        cow_tongue = Option.tongue
         if len(cow_args) > 1:
             cow_name = cow_args[1]
 
-        eyes_template, tongue_template = 'eyes=', 'tongue='
-        cow_eyes = Option.eyes
-        cow_tongue = Option.tongue
+            eyes_template, tongue_template = 'eyes=', 'tongue='
 
-        for word in cow_args[2::]:
-            if word.startswith(eyes_template):
-                cow_eyes = word[len(eyes_template)::]
-            elif word.startswith(tongue_template):
-                cow_tongue = word[len(tongue_template)::]
+            for word in cow_args[2::]:
+                if word.startswith(eyes_template):
+                    cow_eyes = word[len(eyes_template)::]
+                elif word.startswith(tongue_template):
+                    cow_tongue = word[len(tongue_template)::]
 
-        return cowsay(message=cow_text, cow=cow_name,
-                      eyes=cow_eyes, tongue=cow_tongue)
+        if mode == 'say':
+            return cowsay(message=cow_text, cow=cow_name,
+                          eyes=cow_eyes, tongue=cow_tongue)
+        if mode == 'think':
+            return cowthink(message=cow_text, cow=cow_name,
+                            eyes=cow_eyes, tongue=cow_tongue)
 
     def __unite_cows_aligned(self, first_cow_in, second_cow_in):
 
@@ -111,10 +115,51 @@ class twocows(cmd.Cmd):
             print('No reply!')
             return
         reply_begidx = parsed_args.index('reply')
-        cow_1 = self.__parse_cowsay(parsed_args[0:reply_begidx])
-        cow_2 = self.__parse_cowsay(parsed_args[reply_begidx + 1:])
+        cow_1 = self.__parse_cowsay(parsed_args[0:reply_begidx], 'say')
+        cow_2 = self.__parse_cowsay(parsed_args[reply_begidx + 1:], 'say')
 
         print(self.__unite_cows_aligned(cow_1, cow_2))
+
+    def complete_cowsay(self, text, line, begidx, endidx):
+        words = (line[:endidx] + ".").split()
+        cow_list = list_cows()
+        text_begin = words[-1][:-1:]
+        completion_dict = [c for c in cow_list if c.startswith(text_begin)]
+        if (len(words) != 3):
+            completion_dict = []
+        if 'reply' in words:
+            reply_idx = words.index('reply')
+            if (len(words) == reply_idx + 3):
+                completion_dict = [
+                    c for c in cow_list if c.startswith(text_begin)]
+        if (len(completion_dict) == 1) and completion_dict[0] == text_begin:
+            completion_dict = []
+        return completion_dict
+
+    def do_cowthink(self, args):
+        '''
+        Similar to the cowthink command. 
+        cowthink msg [cow_name [parameter=value …]] reply answer [cow_name [[parameter=value …]]
+
+        cow_name - valid .cow file name
+        parameter - 'eyes' or 'tongue'
+        '''
+        parsed_args = shlex.split(args)
+        if len(parsed_args) < 3:
+            print('Please enter full conversation')
+            return
+        if 'reply' not in parsed_args:
+            print('No reply!')
+            return
+        reply_begidx = parsed_args.index('reply')
+        cow_1 = self.__parse_cowsay(parsed_args[0:reply_begidx], mode='think')
+        cow_2 = self.__parse_cowsay(
+            parsed_args[reply_begidx + 1:], mode='think')
+
+        print(self.__unite_cows_aligned(cow_1, cow_2))
+
+    def complete_cowthink(self, text, line, begidx, endidx):
+        return self.complete_cowsay(text, line, begidx, endidx)
 
 
 if __name__ == '__main__':
