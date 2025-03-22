@@ -1,5 +1,5 @@
 import asyncio
-from cowsay import list_cows
+from cowsay import list_cows, cowsay
 
 clients = {}
 clients_names = {}
@@ -14,7 +14,7 @@ async def chat(reader, writer):
     clients[me] = asyncio.Queue()
     send = asyncio.create_task(reader.readline())
     receive = asyncio.create_task(clients[me].get())
-    while not (reader.at_eof() or quit_flag == 1):
+    while not (reader.at_eof()) and (quit_flag == 0):
         done, _ = await asyncio.wait([send, receive], return_when=asyncio.FIRST_COMPLETED)
         for q in done:
             if q is send:
@@ -47,8 +47,19 @@ async def chat(reader, writer):
                                 await clients[me].put(f"Hello, {my_name}")
                             else:
                                 await clients[me].put(f"Please enter valid login!")
+                    case 'say':
+                        receiver = my_msg[1]
+                        if my_name == '':
+                            await clients[me].put('Login first!')
+                        elif (receiver not in list(clients_names.keys())) or (receiver == my_name):
+                            await clients[me].put(f"Unknown receiver!")
+                        else:
+                            cow = cowsay(' '.join(my_msg[2:]),
+                                         cow=my_name)
+                            print(clients_names[receiver])
+                            await clients_names[receiver].put(cow)
                     case _:
-                        await clients[me].put(f"Please login first!")
+                        await clients[me].put(f"Invalid command!")
             elif q is receive:
                 receive = asyncio.create_task(clients[me].get())
                 writer.write(f"{q.result()}\n".encode())
