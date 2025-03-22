@@ -10,10 +10,11 @@ async def chat(reader, writer):
     me = "{}:{}".format(*writer.get_extra_info('peername'))
     print(f'{me} has connected!')
     my_name = ''
+    quit_flag = 0
     clients[me] = asyncio.Queue()
     send = asyncio.create_task(reader.readline())
     receive = asyncio.create_task(clients[me].get())
-    while not reader.at_eof():
+    while not (reader.at_eof() or quit_flag == 1):
         done, _ = await asyncio.wait([send, receive], return_when=asyncio.FIRST_COMPLETED)
         for q in done:
             if q is send:
@@ -29,6 +30,10 @@ async def chat(reader, writer):
                         cows_avail = set(cows_list).difference(
                             set(clients_names.keys()))
                         await clients[me].put(f'{'\n'.join(cows_avail)}')
+                    case 'quit':
+                        quit_flag = 1
+                        if my_name != '':
+                            clients_names.pop(my_name, None)
                     case 'login':
                         if my_name != '':
                             await clients[me].put(f'You are already a cow!')
