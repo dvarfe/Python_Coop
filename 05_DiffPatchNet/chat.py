@@ -56,8 +56,16 @@ async def chat(reader, writer):
                         else:
                             cow = cowsay(' '.join(my_msg[2:]),
                                          cow=my_name)
-                            print(clients_names[receiver])
                             await clients_names[receiver].put(cow)
+                    case 'yield':
+                        if my_name == '':
+                            await clients[me].put(f"Login first!")
+                        else:
+                            for out in clients.values():
+                                if out is not clients[me]:
+                                    cow = cowsay(' '.join(my_msg[1:]),
+                                                 cow=my_name)
+                                    await out.put(cow)
                     case _:
                         await clients[me].put(f"Invalid command!")
             elif q is receive:
