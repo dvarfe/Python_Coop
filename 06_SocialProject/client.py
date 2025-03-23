@@ -35,6 +35,12 @@ class Client(cmd.Cmd):
     def do_login(self, args):
         self.__send_command('login', args)
 
+    def do_cows(self, args):
+        self.__send_command('cows', args)
+
+    def do_who(self, args):
+        self.__send_command('who', args)
+
 
 host = "localhost" if len(sys.argv) < 2 else sys.argv[1]
 port = 1337 if len(sys.argv) < 3 else int(sys.argv[2])
