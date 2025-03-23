@@ -22,13 +22,15 @@ async def chat(reader, writer):
             if q is send:
                 send = asyncio.create_task(reader.readline())
                 my_msg = q.result().decode().strip().split()
-                print(my_msg)
+                # print(my_msg)
                 match my_msg[0]:
                     case 'who':
                         if len(clients_names) == 0:
-                            await clients[me].put(f"0:You're the only cow")
+                            command_num[me] += 1
+                            await clients[me].put(f"{command_num[me]}:You're the only cow")
                         else:
-                            await clients[me].put(f'0:{'\n'.join(clients_names.keys())}')
+                            command_num[me] += 1
+                            await clients[me].put(f'{command_num[me]}:{'\n'.join(clients_names.keys())}')
                     case 'cows':
                         cows_avail = set(cows_list).difference(
                             set(clients_names.keys()))
